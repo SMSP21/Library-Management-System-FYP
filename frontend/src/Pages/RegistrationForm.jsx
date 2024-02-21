@@ -1,0 +1,324 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import onlinelibrary from "../assets/onlineLibrary1.png";
+import rectangle3 from "../assets/rectangle3.jpeg";
+
+function RegistrationForm() {
+  const [formData, setFormData] = useState({
+    userFullName: '',
+    userEmail: '',
+    userUserName: '',
+    userPassword: '',
+    userConfirmPassword: '',
+  });
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Check if the username already exists
+      const usernameCheckResponse = await fetch(`http://localhost:5000/check-username/${formData.userUserName}`);
+      const usernameCheckResult = await usernameCheckResponse.json();
+
+      if (usernameCheckResponse.ok) {
+        if (!usernameCheckResult.usernameExists) {
+          // Username is available, proceed with registration
+          const registrationResponse = await fetch('http://localhost:5000/register/user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userFullName: formData.userFullName,
+              userEmail: formData.userEmail,
+              userUserName: formData.userUserName,
+              userPassword: formData.userPassword,
+              userConfirmPassword: formData.userConfirmPassword,
+            }),
+          });
+
+          const registrationResult = await registrationResponse.json();
+
+          if (registrationResponse.ok) {
+            console.log('Registration successful:', registrationResult.message);
+            toast.success('User Registration Successful!');
+            // Add any logic you want to perform after successful registration
+          } else {
+            console.error('Registration failed:', registrationResult.message);
+            toast.error(`Registration failed: ${registrationResult.message}`);
+            // Add any logic you want to perform after failed registration
+          }
+        } else {
+          // Username already taken
+          toast.error('Username already taken. Please choose another username.');
+        }
+      } else {
+        // Handle non-OK response from the server
+        console.error('Username check failed:', usernameCheckResult.message);
+        toast.error(`Username check failed: ${usernameCheckResult.message}`);
+      }
+    } catch (error) {
+      // Handle other errors
+      console.error('Error during registration:', error);
+      toast.error('Internal Server Error');
+    }
+  };
+
+  return (
+    <>
+      <main>
+        <header className="header-container">
+          <img src={onlinelibrary} alt="Header Decorative" className="header-image" />
+          <div className="header-overlay">
+            <h1 className="header-title">Library Management System</h1>
+            <section className="form-section">
+              <article className="form-container">
+                <aside className="image-aside">
+                  <img src={rectangle3} alt="Side Decorative" className="side-image" />
+                </aside>
+                <form className="registration-form" onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="userFullName" className="visually-hidden">Full Name</label>
+                    <input
+                      type="text"
+                      id="userFullName"
+                      className="form-input"
+                      aria-label="Full Name"
+                      placeholder="Full Name"
+                      value={formData.userFullName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="userUserName" className="visually-hidden">Username</label>
+                    <input
+                      type="text"
+                      id="userUserName"
+                      className="form-input"
+                      aria-label="Username"
+                      placeholder="Username"
+                      value={formData.userUserName}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="userEmail" className="visually-hidden">Email</label>
+                    <input
+                      type="email"
+                      id="userEmail"
+                      className="form-input"
+                      aria-label="Email"
+                      placeholder="Email"
+                      value={formData.userEmail}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="userPassword" className="visually-hidden">Password</label>
+                    <input
+                      type="password"
+                      id="userPassword"
+                      className="form-input"
+                      aria-label="Password"
+                      placeholder="Password"
+                      value={formData.userPassword}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="userConfirmPassword" className="visually-hidden">Confirm Password</label>
+                    <input
+                      type="password"
+                      id="userConfirmPassword"
+                      className="form-input"
+                      aria-label="Confirm Password"
+                      placeholder="Confirm Password"
+                      value={formData.userConfirmPassword}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <button type="submit" className="form-submit">Register</button>
+                </form>
+              </article>
+            </section>
+            <div className="login-container">
+              <p>Already have an account? <Link to="/login">Login Here</Link></p>
+            </div>
+          </div>
+        </header>
+      </main>
+      <ToastContainer />
+      
+      <style jsx>{`
+        main {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .header-container {
+          position: relative;
+          min-height: 100vh;
+        }
+
+        .header-image {
+          width: 100%;
+          height: 100vh;
+          object-fit: cover;
+          opacity: 0.8;
+        }
+
+        .header-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          text-align: center;
+        }
+
+        .header-title {
+          font-size: 36px;
+          margin-bottom: 20px;
+          font-family: 'Inter', sans-serif;
+          font-weight: 800;
+          letter-spacing: 2px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-section {
+          box-shadow: 0px 15px 4px 0px rgba(0, 0, 0, 0.25);
+          background-color: rgba(119, 51, 51, 0.99);
+          padding: 20px;
+          width: 80%;
+          border-radius: 8px;
+          margin: 20px 0;
+          max-width: 1200px;
+        }
+
+        .form-container {
+          display: flex;
+          gap: 20px;
+        }
+
+        .image-aside {
+          flex-basis: 50%;
+        }
+
+        .side-image {
+          width: 100%;
+          height: auto;
+        }
+
+        .registration-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          flex-basis: 50%;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .form-input {
+          background-color: #d9d9d9;
+          height: 35px;
+          padding: 8px;
+          margin-top: 5px;
+          border: none;
+          font-size: 16px;
+          border-radius: 5px;
+        }
+
+        .form-submit {
+          background-color: #d9d9d9;
+          color: #000;
+          padding: 12px 24px;
+          font: italic 700 18px Inter, sans-serif;
+          align-self: flex-end;
+          cursor: pointer;
+          border: none;
+          border-radius: 5px;
+        }
+
+        .login-container {
+          margin-top: 20px;
+          text-align: center;
+          padding-bottom: 20px
+        }
+
+        .login-container p {
+          color: #fff;
+          font-size: 14px;
+        }
+
+        .login-container a {
+          color: #fff;
+          text-decoration: underline;
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          padding: 0;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          border: 0;
+        }
+
+        @media (max-width: 768px) {
+          .header-title {
+            font-size: 24px;
+          }
+
+          .header-overlay {
+            background-size: cover;
+          }
+
+          .form-section {
+            width: 100%;
+            padding: 10px;
+          }
+
+          .form-container {
+            flex-direction: column;
+          }
+
+          .image-aside,
+          .registration-form {
+            flex-basis: 100%;
+          }
+
+          .form-input {
+            font-size: 14px;
+          }
+
+          .form-submit {
+            font-size: 16px;
+          }
+        }
+      `}</style>
+    </>
+  )};
+
+
+export default RegistrationForm;
