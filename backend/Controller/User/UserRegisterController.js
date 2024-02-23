@@ -7,7 +7,7 @@ const UserRegisterController = (app, db) => {
       userPassword,
       userConfirmPassword,
     } = req.body;
-
+    console.log('userFullName')
     const insertUserDetailsQuery =
       "INSERT INTO user_details (userFullName, userEmail, userUserName, userPassword, userConfirmPassword) VALUES (?, ?, ?, ?, ?)";
 

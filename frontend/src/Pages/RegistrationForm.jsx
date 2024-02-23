@@ -18,7 +18,7 @@ function RegistrationForm() {
     const { id, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [id]: value,
+      [id]: value
     }));
   };
 
@@ -30,8 +30,8 @@ function RegistrationForm() {
       const usernameCheckResponse = await fetch(`http://localhost:5000/check-username/${formData.userUserName}`);
       const usernameCheckResult = await usernameCheckResponse.json();
 
-      if (usernameCheckResponse.ok) {
-        if (!usernameCheckResult.usernameExists) {
+      
+        
           // Username is available, proceed with registration
           const registrationResponse = await fetch('http://localhost:5000/register/user', {
             method: 'POST',
@@ -39,14 +39,14 @@ function RegistrationForm() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              userFullName: formData.userFullName,
+              userFullName: formData,
               userEmail: formData.userEmail,
               userUserName: formData.userUserName,
               userPassword: formData.userPassword,
               userConfirmPassword: formData.userConfirmPassword,
             }),
           });
-
+          
           const registrationResult = await registrationResponse.json();
 
           if (registrationResponse.ok) {
@@ -58,15 +58,8 @@ function RegistrationForm() {
             toast.error(`Registration failed: ${registrationResult.message}`);
             // Add any logic you want to perform after failed registration
           }
-        } else {
-          // Username already taken
-          toast.error('Username already taken. Please choose another username.');
-        }
-      } else {
-        // Handle non-OK response from the server
-        console.error('Username check failed:', usernameCheckResult.message);
-        toast.error(`Username check failed: ${usernameCheckResult.message}`);
-      }
+       
+     
     } catch (error) {
       // Handle other errors
       console.error('Error during registration:', error);
@@ -86,7 +79,7 @@ function RegistrationForm() {
                 <aside className="image-aside">
                   <img src={rectangle3} alt="Side Decorative" className="side-image" />
                 </aside>
-                <form className="registration-form" onSubmit={handleSubmit}>
+                <form className="registration-form"  onSubmit={handleSubmit}>
                   <div className="form-group">
                     <label htmlFor="userFullName" className="visually-hidden">Full Name</label>
                     <input

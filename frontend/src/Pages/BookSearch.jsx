@@ -7,7 +7,7 @@ function BookSearch() {
     { id: "booksSearch", text: "Books Search" },
     { id: "viewDataInfo", text: "View Data Info" },
     { id: "returnBook", text: "Return Book" },
-    { id: "placeOrder", text: "Place Order" },
+    { id: "placeOrder", text: "Reservation", route: "/Place-reservations"  }, 
     { id: "logout", text: "Logout", route: "/Signout" }
   ];
 

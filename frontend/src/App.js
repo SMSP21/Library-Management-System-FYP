@@ -7,6 +7,9 @@ import StaffDashboard from './Pages/StaffDashboard';
 import MemberDashboard from './Pages/MemberDashboard';
 import BookSearch from './Pages/BookSearch';
 import MemberLogin from './Pages/MemberLogin';
+import PlaceReservation from './Pages/PlaceReservation';
+import Payement from './Pages/Payement';
+
 function App() {
   return (
     <div>
@@ -21,8 +24,11 @@ function App() {
           <Route path = "/Signout" element= {<HomePage/>} />
           <Route path = "/MemberDashboard" element= {<MemberDashboard/>} />
           <Route path = "/book-search" element= {<BookSearch/>} />
+          <Route path = "/Place-reservations" element= {<PlaceReservation/>} />
+          <Route path = "/Payement" element= {<Payement/>} />
         </Routes>
       </BrowserRouter>
+
     </div>
   );
 }
