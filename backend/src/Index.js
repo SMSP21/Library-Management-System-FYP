@@ -1,24 +1,17 @@
 const express = require('express');
-const mysql = require('mysql');
-const DATABASE = require('./Utilities/CreateDB');
-const TABLES = require('./Utilities/CreateTables');
-const cred = require('./Utilities/credentials');
+const mysql = require('mysql2/promise'); // Import the promise-based version
+const UserRegisterController = require('../Controller/User/UserRegisterController');
 const cors = require('cors');
-const UserRegisterController = require('../Controller/User/UserRegisterController')
-
-
-// const { Sequelize, DataTypes } = require('sequelize');
 
 const app = express();
-const port = 5000;
-
+const port = 3001;
 
 // Enable CORS
 app.use(cors());
 app.use(express.json());
 
-// MySQL connection configuration
-const db = mysql.createConnection({
+// MySQL connection configuration with promise support
+const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
@@ -28,61 +21,23 @@ const db = mysql.createConnection({
   queueLimit: 0
 });
 
-UserRegisterController(app,db);
-
+// Use the correct function name UserRegisterController
+UserRegisterController(app, db);
 
 // Check Database Connection
 // Connect to the database
-db.connect(err => {
-  if (err) {
-    throw err;
-  }
+db.getConnection().then(connection => {
   console.log('Connected to MySQL database');
+  connection.release(); // Release the connection back to the pool
+}).catch(error => {
+  throw error;
 });
-// Define a Book model
-// const Book = sequelize.define('Book', {
-//   title: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   author: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   // Add other fields as needed
-// });
-
-// // Sync the model with the database
-// sequelize.sync();
-
-// // Endpoint to search for books
-// app.get('/api/search-books', async (req, res) => {
-//   try {
-//     // Extract the 'query' parameter from the request URL
-//     const { query } = req.query;
-
-//     // Use a SQL LIKE query for a case-insensitive search
-//     const result = await Book.findAll({
-//       where: {
-//         [Sequelize.Op.or]: [
-//           { title: { [Sequelize.Op.iLike]: `%${query}%` } },
-//           { author: { [Sequelize.Op.iLike]: `%${query}%` } },
-//           // Add other fields as needed
-//         ],
-//       },
-//     });
-
-//     // Send the search result as JSON
-//     res.json(result);
-//   } catch (error) {
-//     // Log any errors to the console
-//     console.error(error);
-//     // Send a 500 Internal Server Error response if an error occurs
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
 
 // Start the server and listen on the specified port
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
+
+

@@ -12,61 +12,63 @@ function RegistrationForm() {
     userUserName: '',
     userPassword: '',
     userConfirmPassword: '',
-  });
+    userType:'member',
+  }); 
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [id]: value
+      [id]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
+     // Simple form validation
+  if (
+    !formData.userFullName ||
+    !formData.userEmail ||
+    !formData.userUserName ||
+    !formData.userPassword ||
+    !formData.userConfirmPassword ||
+    !formData.userType
+  ) {
+    // If any required field is missing, show an error message
+    toast.error('All fields are required');
+    return;
+  }
 
+  if (formData.userPassword !== formData.userConfirmPassword) {
+    // If passwords do not match, show an error message
+    toast.error('Passwords do not match');
+    return;
+  }
+  
     try {
-      // Check if the username already exists
-      const usernameCheckResponse = await fetch(`http://localhost:5000/check-username/${formData.userUserName}`);
-      const usernameCheckResult = await usernameCheckResponse.json();
-
-      
-        
-          // Username is available, proceed with registration
-          const registrationResponse = await fetch('http://localhost:5000/register/user', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userFullName: formData,
-              userEmail: formData.userEmail,
-              userUserName: formData.userUserName,
-              userPassword: formData.userPassword,
-              userConfirmPassword: formData.userConfirmPassword,
-            }),
-          });
-          
-          const registrationResult = await registrationResponse.json();
-
-          if (registrationResponse.ok) {
-            console.log('Registration successful:', registrationResult.message);
-            toast.success('User Registration Successful!');
-            // Add any logic you want to perform after successful registration
-          } else {
-            console.error('Registration failed:', registrationResult.message);
-            toast.error(`Registration failed: ${registrationResult.message}`);
-            // Add any logic you want to perform after failed registration
-          }
-       
-     
+      // Make API call to register user with formData
+      const response = await fetch('your_registration_api_endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      // Check if registration was successful
+      if (response.ok) {
+        // Registration successful, show success message
+        toast.success('Registration successful!');
+      } else {
+        // Registration failed, show error message
+        toast.error('Registration failed. Please try again.');
+      }
     } catch (error) {
-      // Handle other errors
       console.error('Error during registration:', error);
-      toast.error('Internal Server Error');
+      toast.error('Internal Server Error. Please try again later.');
     }
   };
-
   return (
     <>
       <main>
@@ -140,6 +142,21 @@ function RegistrationForm() {
                       onChange={handleChange}
                     />
                   </div>
+                  <div className="form-group">
+                  <label htmlFor="userType" className="visually-hidden">
+                    User Type
+                  </label>
+                  <select
+                    id="userType"
+                    className="form-input"
+                    aria-label="User Type"
+                    value={formData.userType}
+                    onChange={handleChange}
+                  >
+                    <option value="member">Member</option>
+                    <option value="staff">Staff</option>
+                  </select>
+                </div>
                   <button type="submit" className="form-submit">Register</button>
                 </form>
               </article>
@@ -161,7 +178,7 @@ function RegistrationForm() {
 
         .header-container {
           position: relative;
-          min-height: 100vh;
+          min-height: 80vh;
         }
 
         .header-image {
@@ -197,16 +214,16 @@ function RegistrationForm() {
         .form-section {
           box-shadow: 0px 15px 4px 0px rgba(0, 0, 0, 0.25);
           background-color: rgba(119, 51, 51, 0.99);
-          padding: 20px;
+          padding: 10px;
           width: 80%;
           border-radius: 8px;
-          margin: 20px 0;
+          margin: 10px 0;
           max-width: 1200px;
         }
 
         .form-container {
           display: flex;
-          gap: 20px;
+          gap: 10px;
         }
 
         .image-aside {
@@ -214,14 +231,14 @@ function RegistrationForm() {
         }
 
         .side-image {
-          width: 100%;
+          width:100%;
           height: auto;
         }
 
         .registration-form {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 15px;
           flex-basis: 50%;
         }
 

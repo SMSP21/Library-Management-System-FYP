@@ -1,9 +1,52 @@
-import * as React from "react";
-import { Link } from "react-router-dom";
-import onlinelibrary from "../assets/onlineLibrary1.png";
-import rectangle3 from "../assets/rectangle3.jpeg";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import onlinelibrary from '../assets/onlineLibrary1.png';
+import rectangle3 from '../assets/rectangle3.jpeg';
 
 function LoginPage() {
+  const [formData, setFormData] = useState({
+    userUserName: '',
+    userPassword: '',
+  });
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Make API call to backend for login
+      const response = await fetch('your_login_api_endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      // Check if login was successful
+      if (response.ok) {
+        // Login successful, handle the response accordingly
+        const data = await response.json();
+        console.log('Login successful:', data);
+        // You might want to redirect or perform other actions on successful login
+      } else {
+        // Login failed, handle the error accordingly
+        const errorData = await response.json();
+        console.error('Login failed:', errorData);
+        // You might want to show an error message to the user
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      // Handle unexpected errors, show an error message to the user
+    }
+  };
   return (
     <>
       <div className="header-container">
